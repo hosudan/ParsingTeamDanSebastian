@@ -1,0 +1,10 @@
+{
+int a,b,c,min,max;
+string k = "ab";
+read (a,b,c);
+if(a < b) { min = a; max = b; }
+else { min = b; max = a;}
+if(min > c) { min = c; }
+if(max<c) {max= c;}
+print(min); print(max);
+}

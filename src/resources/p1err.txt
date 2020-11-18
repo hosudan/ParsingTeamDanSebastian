@@ -1,0 +1,7 @@
+{
+array int[5] lista;
+int i,sum,$;
+lista = [1a,5,6,2,2]; i=0; sum=0;
+whiel (i<4) { sum = sum + lista[i]; i=i+1;}
+print (sum);
+}
