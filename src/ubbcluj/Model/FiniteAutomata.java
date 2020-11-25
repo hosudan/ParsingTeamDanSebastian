@@ -13,12 +13,18 @@ public class FiniteAutomata {
     private List<String> finalstate;
     private String FAname;
 
+    private String pathToResources;
+
     public FiniteAutomata(String Fname){
+        //this.pathToResoruces = "/Users/Dan/IdeaProjects/FLCD/src/resources/";
+        this.pathToResources = "E:/Sebi/faculta/semestrul5/Formal Languages and Compiler Design/labs/lab5_team/src/resources/";
+
         this.FAname=Fname;
         States = new ArrayList<>();
         input = new ArrayList<>();
         finalstate = new ArrayList<>();
         transitions = new Hashtable<>();
+
         readFA();
     }
 
@@ -134,7 +140,7 @@ public class FiniteAutomata {
 
     public void readFA(){
         try{
-            File file = new File("/Users/Dan/IdeaProjects/FLCD/src/resources/" + this.FAname);
+            File file = new File(this.pathToResources + this.FAname);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String str; String[] list;
             str = br.readLine();

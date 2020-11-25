@@ -12,6 +12,7 @@ public class SScanner {
 
     private String fileName;
     private String fileTable;
+    private String pathToResources;
 
     private HHashTable<String,Integer> codificationTable;
     private List<Pair<Integer,Integer>> PIF;
@@ -21,6 +22,9 @@ public class SScanner {
     private FiniteAutomata FAcons;
 
     public SScanner(String fileName, String fileTable){
+        //this.pathToResoruces = "/Users/Dan/IdeaProjects/FLCD/src/resources/";
+        this.pathToResources = "E:/Sebi/faculta/semestrul5/Formal Languages and Compiler Design/labs/lab5_team/src/resources/";
+
         this.fileName = fileName;
         this.fileTable = fileTable;
         this.codificationTable = readCodificationTable();
@@ -29,12 +33,13 @@ public class SScanner {
         this.error = false;
         this.FAide = new FiniteAutomata("FAidentifier.txt");
         this.FAcons = new FiniteAutomata("FAconstant.txt");
+
     }
 
     public HHashTable<String, Integer> readCodificationTable(){
         HHashTable<String, Integer> table = new HHashTable<>();
         try{
-            File file = new File("/Users/Dan/IdeaProjects/FLCD/src/resources/" + this.fileTable);
+            File file = new File(this.pathToResources + this.fileTable);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String str;
             String[] list;
@@ -54,7 +59,7 @@ public class SScanner {
     public String parseFile(){
         String content = "";
         try{
-            File file = new File("/Users/Dan/IdeaProjects/FLCD/src/resources/" + this.fileName);
+            File file = new File(this.pathToResources + this.fileName);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String str;
             while ((str = br.readLine()) != null) {
@@ -311,9 +316,7 @@ public class SScanner {
         List<Pair<String,Integer>> STprint = addToST();
         List<Pair<Integer,Integer>> PIFprint = addToPIF();
         try {
-
-
-            File STfile = new File("/Users/Dan/IdeaProjects/FLCD/src/resources/ST.out");
+            File STfile = new File(this.pathToResources + "ST.out");
             if (STfile.createNewFile()) {
                 System.out.println("File created: " + STfile.getName());
             } else {
@@ -329,8 +332,7 @@ public class SScanner {
             printWriter.close();
             fileWriter.close();
 
-
-            File PIFfile = new File("/Users/Dan/IdeaProjects/FLCD/src/resources/PIF.out");
+            File PIFfile = new File(this.pathToResources + "PIF.out");
             if (PIFfile.createNewFile()) {
                 System.out.println("File created: " + STfile.getName());
             } else {
