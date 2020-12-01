@@ -110,11 +110,7 @@ public class Parser {
     public void printState(State s){
         String output = "";
         for(Item item : s.getListItems()){
-            output += item.startState;
-            output += " -> ";
-            for(String production : item.getProduction()){
-                output += production;
-            }
+            output += item.toString();
             output += "\n";
         }
         System.out.println(output);
