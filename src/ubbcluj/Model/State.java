@@ -1,13 +1,45 @@
 package ubbcluj.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class State {
     List<Item> listItems;
+    HashMap<String,State> transitions;
 
-    public State(){
+    public State(Grammar grammar){
         listItems = new ArrayList<Item>();
+        transitions = new HashMap<>();
+        closure(grammar);
+    }
+
+    private void closure(Grammar grammar) {
+        boolean changeFlag = false;
+        do {
+            changeFlag = false;
+            HashSet<Item> temp = new HashSet<>();
+            for (Item item : listItems) {
+
+                if (item.getCurrentSymbol()!=null && grammar.isnonterminal(item.getCurrentSymbol())) {
+                    HashSet<Rule> rules = grammar.getRulesByLeftSymbol(item.getCurrentSymbol());
+                    temp.addAll(createItem(rules));
+                }
+            }
+            if(!listItems.containsAll(temp)){
+                listItems.addAll(temp);
+                changeFlag = true;
+            }
+        } while (changeFlag);
+    }
+
+    private HashSet<Item> createItem(HashSet<Rule> rules) {
+        HashSet<Item> results = new HashSet<>();
+        for (Rule rule : rules) {
+            results.add(new Item(rule.getStart(),rule.getProductions().get(0)));
+        }
+        return results;
     }
 
     public State(List<Item> listItems){
@@ -23,6 +55,12 @@ public class State {
             return null;
         }
         return listItems.get(index);
+    }
+    public void addTransition(String s, State state){
+        transitions.put(s, state);
+    }
+    public HashMap<String, State> getTransitions() {
+        return transitions;
     }
 
     public boolean searchItem(Item item){
@@ -54,5 +92,14 @@ public class State {
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for(Item item:listItems){
+            s += item + "\n";
+        }
+        return s;
     }
 }

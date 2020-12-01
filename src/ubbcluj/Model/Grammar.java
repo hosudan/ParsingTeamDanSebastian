@@ -124,6 +124,16 @@ public class Grammar {
         return rules;
     }
 
+    public HashSet<Rule> getRulesByLeftSymbol(String symbol) {
+        HashSet<Rule> symRules = new HashSet<>();
+        for (Rule rule : rules) {
+            if (rule.getStart().equals(symbol)) {
+                symRules.add(rule);
+            }
+        }
+        return symRules;
+    }
+
     public String getStartingSymbol() {
         return startingSymbol;
     }

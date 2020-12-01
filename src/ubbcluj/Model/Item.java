@@ -11,6 +11,9 @@ public class Item {
     public Item(String startState, List<String> production){
         this.index = 0;
         this.finished = false;
+        if (production.size() == 1 && production.get(0).equals("epsilon")) {
+            finished = true;
+        }
         this.startState = startState;
         this.production = production;
     }
@@ -22,7 +25,7 @@ public class Item {
     public String getCurrentSymbol(){
         if(index < this.production.size())
             return this.production.get(index);
-        return "";
+        return null;
     }
 
     /*
@@ -56,6 +59,28 @@ public class Item {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        String str = startState + " -> ";
+        for (int i = 0; i < production.size(); i++) {
+            if (i == index) {
+                str += ".";
+            }
+            str += production.get(i);
+            if(i != production.size() - 1){
+                str+= " ";
+            }
+        }
+        if (production.size() == index) {
+            str += ".";
+        }
+        return str;
+    }
+
+    public int getIndex(){
+        return this.index;
     }
 
 }
