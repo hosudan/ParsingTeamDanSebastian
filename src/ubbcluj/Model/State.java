@@ -28,14 +28,17 @@ public class State {
                     temp.addAll(createItem(rules));
                 }
             }
-            if(!this.hasAllItems(temp)){
+
+            temp = this.returnNonExistingItems(temp);
+            if(!temp.isEmpty()){
                 listItems.addAll(temp);
                 changeFlag = true;
             }
         } while (changeFlag);
     }
 
-    private boolean hasAllItems(HashSet<Item> temp){
+    private HashSet<Item> returnNonExistingItems(HashSet<Item> temp){
+        HashSet<Item> nonExisting = new HashSet<>();
         for(Item tempItem : temp){
             boolean exists = false;
             for(Item existingItem : this.listItems){
@@ -45,9 +48,9 @@ public class State {
                 }
             }
             if(exists == false)
-                return false;
+                nonExisting.add(tempItem);
         }
-        return true;
+        return nonExisting;
     }
 
     private HashSet<Item> createItem(HashSet<Rule> rules) {
