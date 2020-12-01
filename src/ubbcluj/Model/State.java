@@ -9,8 +9,9 @@ public class State {
     List<Item> listItems;
     HashMap<String,State> transitions;
 
-    public State(Grammar grammar){
+    public State(Grammar grammar, Item initialItem){
         listItems = new ArrayList<Item>();
+        listItems.add(initialItem);
         transitions = new HashMap<>();
         closure(grammar);
     }
@@ -27,17 +28,33 @@ public class State {
                     temp.addAll(createItem(rules));
                 }
             }
-            if(!listItems.containsAll(temp)){
+            if(!this.hasAllItems(temp)){
                 listItems.addAll(temp);
                 changeFlag = true;
             }
         } while (changeFlag);
     }
 
+    private boolean hasAllItems(HashSet<Item> temp){
+        for(Item tempItem : temp){
+            boolean exists = false;
+            for(Item existingItem : this.listItems){
+                if(tempItem.equal(existingItem)){
+                    exists = true;
+                    break;
+                }
+            }
+            if(exists == false)
+                return false;
+        }
+        return true;
+    }
+
     private HashSet<Item> createItem(HashSet<Rule> rules) {
         HashSet<Item> results = new HashSet<>();
         for (Rule rule : rules) {
-            results.add(new Item(rule.getStart(),rule.getProductions().get(0)));
+            for(List<String> oneProduction : rule.getProductions())
+                results.add(new Item(rule.getStart(), oneProduction));
         }
         return results;
     }

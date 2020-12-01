@@ -1,9 +1,6 @@
 package ubbcluj;
 
-import ubbcluj.Model.FiniteAutomata;
-import ubbcluj.Model.HHashTable;
-import ubbcluj.Model.Node;
-import ubbcluj.Model.SScanner;
+import ubbcluj.Model.*;
 
 public class Main {
 
@@ -23,5 +20,11 @@ public class Main {
         sc.outputSTPIF();
       /*  FiniteAutomata fa = new FiniteAutomata("FAconstant.txt");
         fa.Menu(); */
+
+        Grammar gr = new Grammar();
+        //gr.Menu();
+
+        Parser p = new Parser(gr);
+        p.printAllStates();
     }
 }
