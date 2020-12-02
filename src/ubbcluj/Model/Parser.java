@@ -9,6 +9,8 @@ public class Parser {
     private List<State> canonicalCollection;
     private Grammar grammar;
     private Boolean log;
+    private HashMap<String, Integer>[] goToTable;
+    private HashMap<String, Action>[] actionTable;
 
     public Parser(Grammar grammar, boolean log){
         this.grammar = grammar;
@@ -16,10 +18,12 @@ public class Parser {
         this.log = log;
         //creating the expanded state, that regarding "S' -> S"
         createAllStates();
+        //createGoToTable();
     }
 
     public State goTo(State s, String currSymbol){
         State newState = null;
+        HashSet<Item> nextState = new HashSet<>();
         if(log){ System.out.println("Log: goto (State: "+ s.toString() + " Symbol:"+ currSymbol + ")");}
         for(Item r : s.getListItems()){
             //get current symbol from item
@@ -31,16 +35,17 @@ public class Parser {
                 Item initialItem = new Item(r.getStartState(), r.getProduction());
                 initialItem.setIndex(r.getIndex());
                 initialItem.next();
+                nextState.add(initialItem);
                 if(log) {System.out.println("Log: -> goto = (new State: "+ initialItem + ")"); }
-                newState = new State(this.grammar, initialItem);
-                if(!this.hasState(newState)) {
-                    //s.addTransition(currSymbol,newState);
-                    this.canonicalCollection.add(newState);
-                    if(log){System.out.println("Log: -> closure = " + newState);}
-                }
-                else { if(log) {System.out.println("Log: -> State not added as it already exists.");} }
             }
         }
+        newState = new State(this.grammar, nextState);
+        if(!this.hasState(newState)) {
+            //s.addTransition(currSymbol,newState);
+            this.canonicalCollection.add(newState);
+            if(log){System.out.println("Log: -> closure = " + newState);}
+        }
+        else { if(log) {System.out.println("Log: -> State not added as it already exists.");} }
         return newState;
     }
 
@@ -64,6 +69,30 @@ public class Parser {
             }
             if(log) { printAllTransitions(); }
         }
+
+    protected void createGoToTable() {
+        goToTable = new HashMap[canonicalCollection.size()];
+        for (int i = 0; i < goToTable.length; i++) {
+            goToTable[i] = new HashMap<>();
+        }
+        for (int i = 0; i < canonicalCollection.size(); i++) {
+            for (String s : canonicalCollection.get(i).getTransitions().keySet()) {
+                if (grammar.isnonterminal(s)) {
+                    goToTable[i].put(s, findStateIndex(canonicalCollection.get(i).getTransitions().get(s)));
+                }
+            }
+        }
+        //System.out.print(goToTableStr());
+    }
+
+    private int findStateIndex(State state) {
+        for (int i = 0; i < canonicalCollection.size(); i++) {
+            if (canonicalCollection.get(i).equals(state)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
 //    public State goTo(State s, String symbol){
 //        //create new state

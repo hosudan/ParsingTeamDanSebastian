@@ -9,6 +9,13 @@ public class State {
     List<Item> listItems;
     HashMap<String,State> transitions;
 
+    public State(Grammar grammar, HashSet<Item> initialitems){
+        listItems = new ArrayList<Item>();
+        this.listItems.addAll(initialitems);
+        transitions = new HashMap<>();
+        closure(grammar);
+    }
+
     public State(Grammar grammar, Item initialItem){
         listItems = new ArrayList<Item>();
         listItems.add(initialItem);
@@ -42,6 +49,7 @@ public class State {
         } while (changeFlag);
        // System.out.println("Log: closure "+ this.toString());
     }
+
 
     private HashSet<Item> returnNonExistingItems(HashSet<Item> temp){
         HashSet<Item> nonExisting = new HashSet<>();
