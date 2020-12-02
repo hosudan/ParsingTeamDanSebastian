@@ -1,29 +1,69 @@
 package ubbcluj.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class Parser {
-    List<State> states;
-    Grammar grammar;
+    private List<State> canonicalCollection;
+    private Grammar grammar;
+    private Boolean log;
 
-    public Parser(Grammar grammar){
+    public Parser(Grammar grammar, boolean log){
         this.grammar = grammar;
-        this.states = new ArrayList<State>();
-
+        this.canonicalCollection = new ArrayList<>();
+        this.log = log;
         //creating the expanded state, that regarding "S' -> S"
-        this.init();
+        createAllStates();
+    }
+
+    public State goTo(State s, String currSymbol){
+        State newState = null;
+        if(log){ System.out.println("Log: goto (State: "+ s.toString() + " Symbol:"+ currSymbol + ")");}
+        for(Item r : s.getListItems()){
+            //get current symbol from item
+            String itemCurrentSymbol = r.getCurrentSymbol();
+            //if current symbol is the same as the parameter currSymbol, that means we can move the dot
+            if(itemCurrentSymbol != null && itemCurrentSymbol.equals(currSymbol)){
+                //copy the item to do a next() on it, then create a new state with it.
+                // Leave the initial item alone, since it belongs to the current state.
+                Item initialItem = new Item(r.getStartState(), r.getProduction());
+                initialItem.setIndex(r.getIndex());
+                initialItem.next();
+                if(log) {System.out.println("Log: -> goto = (new State: "+ initialItem + ")"); }
+                newState = new State(this.grammar, initialItem);
+                if(!this.hasState(newState)) {
+                    //s.addTransition(currSymbol,newState);
+                    this.canonicalCollection.add(newState);
+                    if(log){System.out.println("Log: -> closure = " + newState);}
+                }
+                else { if(log) {System.out.println("Log: -> State not added as it already exists.");} }
+            }
+        }
+        return newState;
     }
 
     public void createAllStates(){
-        for(State s : this.states){
-            //call goTo for the state s with every nonterminal
-            //State newState = new State(grammar);
-            for(String nonTerminal : this.grammar.getNonTerminals()){
-                
+        this.init();
+        for (int i = 0; i < canonicalCollection.size(); i++) {
+                HashSet<String> currentsymbolsforstate = new HashSet<>();
+                for (Item item : canonicalCollection.get(i).getListItems()) {
+                    if (item.getCurrentSymbol() != null) {
+                        currentsymbolsforstate.add(item.getCurrentSymbol());
+                    }
+                }
+                State temp;
+                for (String str : currentsymbolsforstate) {
+                    temp = goTo(canonicalCollection.get(i), str);
+                    if (temp != null) {
+                        canonicalCollection.get(i).addTransition(str, temp);
+                    }
+                }
+
             }
+            if(log) { printAllTransitions(); }
         }
-    }
 
 //    public State goTo(State s, String symbol){
 //        //create new state
@@ -49,26 +89,8 @@ public class Parser {
 //        return newState;
 //    }
 
-    public void goTo(State s, String currSymbol){
-        for(Item r : s.getListItems()){
-            //get current symbol from item
-            String itemCurrentSymbol = r.getCurrentSymbol();
-            //if current symbol is the same as the parameter currSymbol, that means we can move the dot
-            if(itemCurrentSymbol != null && itemCurrentSymbol.equals(currSymbol)){
-                //copy the item to do a next() on it, then create a new state with it.
-                // Leave the initial item alone, since it belongs to the current state.
-                Item initialItem = new Item(r.getStartState(), r.getProduction());
-                initialItem.next();
-                State newState = new State(this.grammar, initialItem);
-                if(!this.hasState(newState)) {
-                    this.states.add(newState);
-                }
-            }
-        }
-    }
-
     public boolean hasState(State someState){
-        for(State s : this.states){
+        for(State s : this.canonicalCollection){
             if(s.equal(someState))
                 return true;
         }
@@ -102,9 +124,10 @@ public class Parser {
         extendedProduction.add(grammar.getStartingSymbol());
         Item extendedItem = new Item(extendedStartState, extendedProduction);
 
-        State s0 = new State(grammar, extendedItem);
+        State s0 = new State(grammar,extendedItem);
 
-        this.states.add(s0);
+        this.canonicalCollection.add(s0);
+        if(log){System.out.println("init done: " + s0);}
     }
 
     public void printState(State s){
@@ -116,10 +139,24 @@ public class Parser {
         System.out.println(output);
     }
 
+    public void printAllTransitions(){
+        System.out.println("-----------All the transitions between the states-----------");
+        int i = 0;
+        for ( State st : this.canonicalCollection){
+            System.out.println("State #" + i + " -> " + st);
+            for (HashMap.Entry<String, State> entry : st.getTransitions().entrySet()) {
+                System.out.println(entry.getKey() + ":" + entry.getValue().toString());
+            }
+            System.out.println("--------------------");
+            i++;
+        }
+    }
+
     public void printAllStates(){
         String output = "";
-        for(State currS : this.states){
+        for(State currS : this.canonicalCollection){
             printState(currS);
+            System.out.println("------------");
         }
     }
 }

@@ -16,7 +16,13 @@ public class State {
         closure(grammar);
     }
 
+    public State(Grammar grammar){
+        listItems = new ArrayList<Item>();
+        transitions = new HashMap<>();
+    }
+
     private void closure(Grammar grammar) {
+       // System.out.println("Log: closure initial "+ this.toString());
         boolean changeFlag = false;
         do {
             changeFlag = false;
@@ -28,13 +34,13 @@ public class State {
                     temp.addAll(createItem(rules));
                 }
             }
-
             temp = this.returnNonExistingItems(temp);
             if(!temp.isEmpty()){
                 listItems.addAll(temp);
                 changeFlag = true;
             }
         } while (changeFlag);
+       // System.out.println("Log: closure "+ this.toString());
     }
 
     private HashSet<Item> returnNonExistingItems(HashSet<Item> temp){
@@ -116,10 +122,11 @@ public class State {
 
     @Override
     public String toString() {
-        String s = "";
-        for(Item item:listItems){
-            s += item + "\n";
+        String s = "[";
+        for(int i = 0; i<listItems.size()-1; i++){
+            s += listItems.get(i) + " | ";
         }
+        s+= listItems.get(listItems.size()-1) + "]";
         return s;
     }
 }

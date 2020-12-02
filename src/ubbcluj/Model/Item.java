@@ -82,5 +82,9 @@ public class Item {
     public int getIndex(){
         return this.index;
     }
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
 
 }

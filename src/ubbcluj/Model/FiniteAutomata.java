@@ -16,8 +16,8 @@ public class FiniteAutomata {
     private String pathToResources;
 
     public FiniteAutomata(String Fname){
-        //this.pathToResoruces = "/Users/Dan/IdeaProjects/FLCD/src/resources/";
-        this.pathToResources = "E:/Sebi/faculta/semestrul5/Formal Languages and Compiler Design/labs/lab5_team/src/resources/";
+        //this.pathToResources = "/Users/Dan/IdeaProjects/FLCD/src/resources/";
+        //this.pathToResources = "E:/Sebi/faculta/semestrul5/Formal Languages and Compiler Design/labs/lab5_team/src/resources/";
 
         this.FAname=Fname;
         States = new ArrayList<>();

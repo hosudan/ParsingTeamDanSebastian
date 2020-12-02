@@ -14,17 +14,18 @@ public class Main {
         map.remove(510);
         System.out.println(map.get(510)); */
 
-        SScanner sc = new SScanner("p1example.txt","codificationtable.txt");
+      /*  SScanner sc = new SScanner("p1example.txt","codificationtable.txt");
         System.out.println(sc.isIdentifier("1"));
         System.out.println(sc.isCharacter("\"a\""));
-        sc.outputSTPIF();
+        sc.outputSTPIF();*/
       /*  FiniteAutomata fa = new FiniteAutomata("FAconstant.txt");
         fa.Menu(); */
 
         Grammar gr = new Grammar();
-        //gr.Menu();
+      //  gr.Menu();
 
-        Parser p = new Parser(gr);
-        p.printAllStates();
+        Parser p = new Parser(gr,true);
+      //  p.printAllStates();
+      //  p.printAllTransitions();
     }
 }
