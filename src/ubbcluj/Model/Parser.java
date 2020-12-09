@@ -85,7 +85,6 @@ public class Parser {
                     goToTable[i].put(s, findStateIndex(canonicalCollection.get(i).getTransitions().get(s)));
             }
         }
-        //System.out.print(goToTableStr());
     }
 
     public String TableStr() {
@@ -123,37 +122,6 @@ public class Parser {
         return str;
     }
 
-    public String goToTableStr() {
-        String str = "goto table: \n";
-        str += "          ";
-        for (String variable : grammar.getNonTerminals()) {
-            str += String.format("%-6s",variable);
-        }
-        for (String variable : grammar.getTerminals()) {
-            str += String.format("%-6s",variable);
-        }
-        str += "\n";
-
-        for (int i = 0; i < goToTable.length; i++) {
-            for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
-                str += "-";
-            }
-            str += "\n";
-            str += String.format("|%-6s|",i);
-            for (String variable : grammar.getNonTerminals()) {
-                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
-            }
-            for (String variable : grammar.getTerminals()) {
-                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
-            }
-            str += "\n";
-        }
-        for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
-            str += "-";
-        }
-        str += "\n";
-        return str;
-    }
 
     private boolean createActionTable() {
         actionTable = new Action[canonicalCollection.size()];
@@ -213,10 +181,28 @@ public class Parser {
                     }
                     index++;
                 }
+                index--;
             }
             index+=rule.getProductions().size();
         }
         return -1;
+    }
+
+    private Item findIndexRule(int ind){
+        int index = 1;
+        for(Rule rule: grammar.getRules()){
+            //System.out.println(rule + " " + index);
+                for(List<String> prod : rule.getProductions())
+                {
+                    if(index == ind){
+                        Item ret = new Item(rule.getStart(),prod);
+                        return ret;
+                    }
+                    index++;
+                }
+                //System.out.println("index after productions" + index);
+        }
+        return null;
     }
 
     private int findStateIndex(State state) {
@@ -226,6 +212,79 @@ public class Parser {
             }
         }
         return -1;
+    }
+
+    public boolean accept(ArrayList<String> input){
+        Integer stindex = 0;
+        String Output = "";
+        boolean end = false;
+        input.add("$");
+        Stack<String> inputSt = new Stack();
+        Stack<String> workingSt = new Stack();
+        for (int i = input.size()-1; i>=0; i--){
+            inputSt.push(input.get(i));
+        }
+        //System.out.println(inputSt);
+        workingSt.add("$");
+        workingSt.add("0");
+        do{
+            if(log) {
+                System.out.println("----------BEFORE--------");
+                System.out.println("Input:" + inputSt);
+                System.out.println("Working:" + workingSt);
+                System.out.println("Output:" + Output);
+            }
+            if(actionTable[stindex].getType() == ActionType.SHIFT){
+                String in = inputSt.pop();
+                stindex = goToTable[stindex].get(in);
+                workingSt.push(in);
+                workingSt.push(stindex+"");
+            }
+            else if (actionTable[stindex].getType() == ActionType.REDUCE){
+                int ruleIndex = actionTable[stindex].getStindex();
+               // System.out.println(ruleIndex+ "");
+                Item itm = findIndexRule(ruleIndex);
+                //System.out.println(itm);
+                String leftSide = itm.getStartState();
+                int rightSideLength = itm.getProduction().size();
+                for(int i=0; i <2*rightSideLength ; i++){
+                    workingSt.pop();
+                }
+                int nextState= 0;
+                try {
+                    nextState = Integer.parseInt(workingSt.peek());
+                } catch (NumberFormatException e ){ System.out.println(" ER " + workingSt.peek()); }
+                workingSt.push(leftSide);
+                int variableState = goToTable[nextState].get(leftSide);
+                workingSt.push(variableState+"");
+                Output += ruleIndex +"";
+                stindex = variableState;
+            }
+            else {
+                if (actionTable[stindex].getType() == ActionType.ACCEPT){
+                            workingSt.removeAllElements();
+                            workingSt.add("acc");
+                            StringBuilder out = new StringBuilder();
+                            out.append(Output);
+                            out.reverse();
+                            Output = out.toString();
+                            end = true;
+                }
+                if (actionTable[stindex].getType() == ActionType.ERROR){
+                        workingSt.removeAllElements();
+                        workingSt.add("error");
+                        System.out.println("Error before token: " + inputSt.toString());
+                        return false;
+                }
+            }
+            if (log) {
+                System.out.println("----------AFTER--------");
+                System.out.println("Input:" + inputSt);
+                System.out.println("Working:" + workingSt);
+                System.out.println("Output:" + Output);
+            }
+        } while(!end);
+        return true;
     }
 
 //    public State goTo(State s, String symbol){

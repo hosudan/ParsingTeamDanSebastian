@@ -3,6 +3,7 @@ package ubbcluj;
 import ubbcluj.Model.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -27,9 +28,13 @@ public class Main {
         Grammar gr = new Grammar();
        // gr.Menu();
 
-        Parser p = new Parser(gr,false);
+        Parser p = new Parser(gr,true);
         //p.printAllStates();
         System.out.println(p.TableStr());
+        ArrayList<String> test =
+                new ArrayList<String>(Arrays.asList("a","b","b","c"));
+        //System.out.println(p.findIndexRule(3));
+        System.out.println(p.accept(test));
         //p.printAllTransitions();
     }
 }
