@@ -215,6 +215,12 @@ public class Parser {
     }
 
     public boolean accept(ArrayList<String> input){
+        //sequence validation
+        for( String s : input){
+            if(!grammar.isnonterminal(s) && !grammar.isterminal(s)){
+                return false;
+            }
+        }
         Integer stindex = 0;
         String Output = "";
         boolean end = false;
@@ -234,6 +240,7 @@ public class Parser {
                 System.out.println("Working:" + workingSt);
                 System.out.println("Output:" + Output);
             }
+            if (stindex == null) { return false; }
             if(actionTable[stindex].getType() == ActionType.SHIFT){
                 String in = inputSt.pop();
                 stindex = goToTable[stindex].get(in);
@@ -242,7 +249,7 @@ public class Parser {
             }
             else if (actionTable[stindex].getType() == ActionType.REDUCE){
                 int ruleIndex = actionTable[stindex].getStindex();
-               // System.out.println(ruleIndex+ "");
+                System.out.println(ruleIndex+ "");
                 Item itm = findIndexRule(ruleIndex);
                 //System.out.println(itm);
                 String leftSide = itm.getStartState();
@@ -269,6 +276,8 @@ public class Parser {
                             out.reverse();
                             Output = out.toString();
                             end = true;
+                            if (inputSt.size()>1) { return false; }
+                            //return true;
                 }
                 if (actionTable[stindex].getType() == ActionType.ERROR){
                         workingSt.removeAllElements();
