@@ -2,6 +2,9 @@ package ubbcluj;
 
 import ubbcluj.Model.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -22,10 +25,11 @@ public class Main {
         fa.Menu(); */
 
         Grammar gr = new Grammar();
-      //  gr.Menu();
+       // gr.Menu();
 
-        Parser p = new Parser(gr,true);
-      //  p.printAllStates();
-      //  p.printAllTransitions();
+        Parser p = new Parser(gr,false);
+        //p.printAllStates();
+        System.out.println(p.TableStr());
+        //p.printAllTransitions();
     }
 }

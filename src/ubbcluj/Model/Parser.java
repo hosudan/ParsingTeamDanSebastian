@@ -1,16 +1,13 @@
 package ubbcluj.Model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class Parser {
     private List<State> canonicalCollection;
     private Grammar grammar;
     private Boolean log;
     private HashMap<String, Integer>[] goToTable;
-    private HashMap<String, Action>[] actionTable;
+    private Action[] actionTable;
 
     public Parser(Grammar grammar, boolean log){
         this.grammar = grammar;
@@ -18,7 +15,15 @@ public class Parser {
         this.log = log;
         //creating the expanded state, that regarding "S' -> S"
         createAllStates();
-        //createGoToTable();
+        createGoToTable();
+        createActionTable();
+        //printactiontable();
+    }
+
+    public void printactiontable(){
+        for(int i = 0; i<actionTable.length; i++){
+            System.out.println(i + ": "  + actionTable[i].getType().toString() + " " +  actionTable[i].getStindex());
+        }
     }
 
     public State goTo(State s, String currSymbol){
@@ -77,17 +82,146 @@ public class Parser {
         }
         for (int i = 0; i < canonicalCollection.size(); i++) {
             for (String s : canonicalCollection.get(i).getTransitions().keySet()) {
-                if (grammar.isnonterminal(s)) {
                     goToTable[i].put(s, findStateIndex(canonicalCollection.get(i).getTransitions().get(s)));
-                }
             }
         }
         //System.out.print(goToTableStr());
     }
 
+    public String TableStr() {
+        String str = "LR(0) Table: \n";
+        str += "          ";
+        for (String variable : grammar.getNonTerminals()) {
+            str += String.format("%-6s",variable);
+        }
+        for (String variable : grammar.getTerminals()) {
+            str += String.format("%-6s",variable);
+        }
+        str += "\n";
+
+        for (int i = 0; i < goToTable.length; i++) {
+            for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
+                str += "-";
+            }
+            str += "\n";
+            str += String.format("|%-6s|",i);
+            for (String variable : grammar.getNonTerminals()) {
+                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
+            }
+            for (String variable : grammar.getTerminals()) {
+                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
+            }
+            if(actionTable[i].getType().equals(ActionType.REDUCE)){
+            str+= String.format("%9s",(actionTable[i].getType().toString() + " " +  actionTable[i].getStindex())); }
+            else { str+=String.format("%7s",(actionTable[i].getType().toString())); }
+            str += "\n";
+        }
+        for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
+            str += "-";
+        }
+        str += "\n";
+        return str;
+    }
+
+    public String goToTableStr() {
+        String str = "goto table: \n";
+        str += "          ";
+        for (String variable : grammar.getNonTerminals()) {
+            str += String.format("%-6s",variable);
+        }
+        for (String variable : grammar.getTerminals()) {
+            str += String.format("%-6s",variable);
+        }
+        str += "\n";
+
+        for (int i = 0; i < goToTable.length; i++) {
+            for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
+                str += "-";
+            }
+            str += "\n";
+            str += String.format("|%-6s|",i);
+            for (String variable : grammar.getNonTerminals()) {
+                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
+            }
+            for (String variable : grammar.getTerminals()) {
+                str += String.format("%6s",(goToTable[i].get(variable) == null ? "|" : goToTable[i].get(variable)+"|"));
+            }
+            str += "\n";
+        }
+        for (int j = 0; j < (grammar.getNonTerminals().size()+grammar.getTerminals().size()+1)*6+2; j++) {
+            str += "-";
+        }
+        str += "\n";
+        return str;
+    }
+
+    private boolean createActionTable() {
+        actionTable = new Action[canonicalCollection.size()];
+        for(int i = 0; i< actionTable.length; i++) {
+              actionTable[i] = new Action(ActionType.ERROR, -1);
+        }
+        for(int i = 0; i< canonicalCollection.size(); i++){
+            State st = canonicalCollection.get(i);
+            if (st.getTransitions().size() != 0){
+                // conflict shift-reduce
+                List<Item> itlst = st.getListItems();
+                for(Item it : itlst){
+                    if (it.isFinished()){
+                        System.out.println("Conflict shift-reduce at state: " + findStateIndex(st));
+                        return false;
+                    }
+                }
+                //actionTable[i] = new Action(ActionType.SHIFT,-1);
+                actionTable[i].setType(ActionType.SHIFT);
+            }
+            else {
+                List<Item> itlst = st.getListItems();
+                if (itlst.get(0).getStartState().equals(grammar.getStartingSymbol()+"'") && itlst.get(0).getProduction().get(0).equals(grammar.getStartingSymbol())){
+                    //actionTable[i] = new Action(ActionType.ACCEPT,-1);
+                    actionTable[i].setType(ActionType.ACCEPT);
+                }
+                else{
+                    Item redItem = st.getListItems().get(0);
+                    int finished = 0; // conflict reduce-reduce
+                    for(Item it : itlst){
+                        if (it.isFinished()){
+                            finished++;
+                        }
+                    }
+                    if (finished > 1){
+                        System.out.println("Conflict reduce-reduce at state: " + findStateIndex(st));
+                        return false;
+                    }else if(finished == 1){
+                        //actionTable[i] = new Action(ActionType.REDUCE, findRuleIndex(redItem));
+                        actionTable[i].setType(ActionType.REDUCE);
+                        actionTable[i].setStindex(findRuleIndex(redItem));
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private int findRuleIndex(Item it){
+        int index = 1;
+        for(Rule rule: grammar.getRules()){
+            if(rule.getStart().equals(it.getStartState())){
+                for(List<String> prod : rule.getProductions())
+                {
+                    if(prod.equals(it.getProduction())){
+                            return index;
+                    }
+                    index++;
+                }
+            }
+            index+=rule.getProductions().size();
+        }
+        return -1;
+    }
+
     private int findStateIndex(State state) {
         for (int i = 0; i < canonicalCollection.size(); i++) {
-            if (canonicalCollection.get(i).equals(state)) {
+            if (canonicalCollection.get(i).equal(state)) {
                 return i;
             }
         }
@@ -174,7 +308,7 @@ public class Parser {
         for ( State st : this.canonicalCollection){
             System.out.println("State #" + i + " -> " + st);
             for (HashMap.Entry<String, State> entry : st.getTransitions().entrySet()) {
-                System.out.println(entry.getKey() + ":" + entry.getValue().toString());
+                System.out.println(entry.getKey() + ":" + entry.getValue().toString() + "State:" + findStateIndex(entry.getValue()));
             }
             System.out.println("--------------------");
             i++;
