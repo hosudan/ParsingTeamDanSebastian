@@ -5,6 +5,7 @@ import ubbcluj.Model.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 public class Main {
 
@@ -31,10 +32,16 @@ public class Main {
         Parser p = new Parser(gr,true);
         //p.printAllStates();
         System.out.println(p.TableStr());
-        ArrayList<String> test =
-                new ArrayList<String>(Arrays.asList("a","b","b","c"));
+        ArrayList<String> test = new ArrayList<String>(Arrays.asList("a","b","c","d"));
         //System.out.println(p.findIndexRule(3));
         System.out.println(p.accept(test));
         //p.printAllTransitions();
+
+        System.out.println("\n\n");
+        ParseTreeV2 pt2 = new ParseTreeV2(p.getLastWordIndexesUsed(), gr);
+        //ParseTreeV2 pt2 = new ParseTreeV2("1 2 3 4", gr);
+
+        System.out.println(pt2.toString());
+
     }
 }

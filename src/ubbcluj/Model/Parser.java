@@ -8,6 +8,7 @@ public class Parser {
     private Boolean log;
     private HashMap<String, Integer>[] goToTable;
     private Action[] actionTable;
+    private String lastWordIndexesUsed;
 
     public Parser(Grammar grammar, boolean log){
         this.grammar = grammar;
@@ -264,7 +265,7 @@ public class Parser {
                 workingSt.push(leftSide);
                 int variableState = goToTable[nextState].get(leftSide);
                 workingSt.push(variableState+"");
-                Output += ruleIndex +"";
+                Output += ruleIndex +" ";
                 stindex = variableState;
             }
             else {
@@ -283,6 +284,7 @@ public class Parser {
                         workingSt.removeAllElements();
                         workingSt.add("error");
                         System.out.println("Error before token: " + inputSt.toString());
+                        this.lastWordIndexesUsed = null;
                         return false;
                 }
             }
@@ -293,7 +295,15 @@ public class Parser {
                 System.out.println("Output:" + Output);
             }
         } while(!end);
+
+        //for parseTree building
+        this.lastWordIndexesUsed = Output;
+
         return true;
+    }
+
+    public String getLastWordIndexesUsed(){
+        return this.lastWordIndexesUsed;
     }
 
 //    public State goTo(State s, String symbol){
