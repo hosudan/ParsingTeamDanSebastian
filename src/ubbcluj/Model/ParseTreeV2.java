@@ -47,7 +47,9 @@ public class ParseTreeV2 {
 
         if(indexesUsed != null) {
             //first node
+            System.out.println(this.indexesUsed);
             normalizeIndexes();
+            System.out.println(this.indexesUsed);
             Node firstNode = new Node(grammar.getStartingSymbol(), 0);
             listNodes.add(firstNode);
             createTree();
@@ -55,27 +57,43 @@ public class ParseTreeV2 {
     }
 
     public void normalizeIndexes(){
-//        String indexesUsedNormalized = "";
-//        int currentIndex = 0;
-//        for(String indexAsString : this.indexesUsed.split(" ")){
-//            if(indexAsString != null){
-//                currentIndex++; //refers to the n'th element of indexesUsed
-//                int indexAsInt = Integer.parseInt(indexAsString);
-//                List<String> prod = findProductionByIndex(indexAsInt);
-//
-//                //count the number of nonterminals
-//                int count = 0;
-//                for(String symbol : prod){
-//                    if(this.grammar.isnonterminal(symbol))
-//                        count++;
-//                }
-//
-//                //reverse the position of the next as many numbers as count has
-//                for(int i=0; i<count; i++){
-//                    indexesUsedNormalized +=
-//                }
-//            }
-//        }
+        String indexesUsedNormalized = "";
+        int currentIndex = 0;
+        List<Integer> listProdIndexes = new ArrayList<>();
+        //convert indexes from string to int
+        for(String indexAsString : this.indexesUsed.split(" ")){
+            if(indexAsString.equals("") == false){
+                int indexAsInt = Integer.parseInt(indexAsString);
+                listProdIndexes.add(indexAsInt);
+            }
+        }
+
+        //change the position of some indexes
+        for(int i=listProdIndexes.size()-1; i>=0; i--){
+            int currentProdIndex = listProdIndexes.get(i);
+            List<String> prod = findProductionByIndex(currentProdIndex);
+            int countNonterminals = 0;
+            for(String symbol : prod){
+                if(this.grammar.isnonterminal(symbol)){
+                    countNonterminals++;
+                }
+            }
+            //reverse the elements starting from i+1 until i+countNonTerminals
+            List<Integer> subList = new ArrayList<>();
+            for(int j=0; j<countNonterminals; j++){
+                subList.add(listProdIndexes.get(i+countNonterminals-j));
+            }
+            for(int j=0; j<countNonterminals; j++){
+                listProdIndexes.set(i+j+1, subList.get(j));
+            }
+        }
+
+        //retransformm listProdIndexes to this.indexesUsed
+        for(int el : listProdIndexes){
+            indexesUsedNormalized += Integer.toString(el) + " ";
+        }
+
+        this.indexesUsed = indexesUsedNormalized;
     }
 
     public List<String> findProductionByIndex(int index){
