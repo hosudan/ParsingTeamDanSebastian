@@ -29,6 +29,26 @@ public class Main {
         Grammar gr = new Grammar();
        // gr.Menu();
 
+        ArrayList<String> program = new ArrayList<>();
+//        program.add("if");
+//        program.add("(");
+//        program.add("identifier");
+//        program.add(">");
+//        program.add("identifier");
+//        program.add(")");
+//        program.add("{");
+//        program.add("identifier");
+//        program.add("=");
+//        program.add("constant");
+//        program.add(";");
+//        program.add("}");
+        program.add("{");
+        program.add("int");
+        program.add("identifier");
+        //program.add("");
+        program.add(";");
+        program.add("}");
+
         Parser p = new Parser(gr,true);
         //p.printAllStates();
         System.out.println(p.TableStr());

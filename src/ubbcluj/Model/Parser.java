@@ -244,6 +244,9 @@ public class Parser {
             if (stindex == null) { return false; }
             if(actionTable[stindex].getType() == ActionType.SHIFT){
                 String in = inputSt.pop();
+                if(in.equals("identifier")){
+                    int a;
+                }
                 stindex = goToTable[stindex].get(in);
                 workingSt.push(in);
                 workingSt.push(stindex+"");
