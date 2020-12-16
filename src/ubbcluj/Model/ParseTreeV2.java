@@ -167,6 +167,7 @@ public class ParseTreeV2 {
         Node currentNode = this.listNodes.get(nodeIndexLeft);
         while(currentNode.getRightSibling() != -1){
             if(currentNode.getRightSibling() == nodeIndexRight) return true;
+            currentNode = this.listNodes.get(currentNode.getRightSibling());
         }
         return false;
     }
