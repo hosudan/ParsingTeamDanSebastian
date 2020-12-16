@@ -63,7 +63,7 @@ public class Grammar {
     private void getGrammarFromFile() {
         try {
             int i = 0;
-            for (String line : Files.readAllLines(Paths.get("src/resources/grammar.txt"))) {
+            for (String line : Files.readAllLines(Paths.get("src/resources/grammar2.txt"))) {
                 if (i <= 2){
                     String[] lst = line.split(" ");
                     for (int j = 0; j < lst.length; j++) {

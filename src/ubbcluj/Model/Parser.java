@@ -18,6 +18,7 @@ public class Parser {
         createAllStates();
         createGoToTable();
         createActionTable();
+
         //printactiontable();
     }
 
@@ -219,6 +220,7 @@ public class Parser {
         //sequence validation
         for( String s : input){
             if(!grammar.isnonterminal(s) && !grammar.isterminal(s)){
+                System.out.println("\n\tAICI -1"+ " "+s);
                 return false;
             }
         }
@@ -241,12 +243,15 @@ public class Parser {
                 System.out.println("Working:" + workingSt);
                 System.out.println("Output:" + Output);
             }
-            if (stindex == null) { return false; }
+            if (stindex == null) {
+                //System.out.println("\n\tAICI");
+                return false;
+            }
             if(actionTable[stindex].getType() == ActionType.SHIFT){
                 String in = inputSt.pop();
-                if(in.equals("identifier")){
-                    int a;
-                }
+//                if(in.equals("identifier")){
+//                    int a;
+//                }
                 stindex = goToTable[stindex].get(in);
                 workingSt.push(in);
                 workingSt.push(stindex+"");
@@ -280,7 +285,10 @@ public class Parser {
                             out.reverse();
                             Output = out.toString();
                             end = true;
-                            if (inputSt.size()>1) { return false; }
+                            if (inputSt.size()>1) {
+                                //System.out.println("\n\tAICI 2");
+                                return false;
+                            }
                             //return true;
                 }
                 if (actionTable[stindex].getType() == ActionType.ERROR){
@@ -288,6 +296,7 @@ public class Parser {
                         workingSt.add("error");
                         System.out.println("Error before token: " + inputSt.toString());
                         this.lastWordIndexesUsed = null;
+                        //System.out.println("\n\tAICI 3");
                         return false;
                 }
             }

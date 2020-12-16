@@ -1,31 +1,23 @@
-program expression_helper stmtlist_helper compound_stmt type boolean_operator low_priority_arithmetic_operator high_priority_arithmetic_operator term fact compound_stmt stmtlist stmt declaration_statement var_assignment_statement io_statement while_statement if_statement var_declaration_statement struct_declaration_statement struct expression condition logical_operator input output complex_condition
+program struct_assignment_statement if_statement_helper2 expression_helper stmtlist_helper stmtlist_helper2 if_statement_helper compound_stmt type boolean_operator low_priority_arithmetic_operator high_priority_arithmetic_operator term fact compound_stmt stmtlist stmt declaration_statement var_assignment_statement io_statement while_statement if_statement var_declaration_statement struct_declaration_statement struct expression condition logical_operator input output complex_condition
 int real char string array { } ; + - * / % ( ) while if = read print , ~ [ ] identifier constant > < >= <= == != AND OR NOT else
 program
 program -> compound_stmt
 type -> int | real | char | string
 compound_stmt -> { stmtlist }
-stmtlist -> stmt ; | stmtlist_helper
-stmtlist_helper -> stmtlist_helper2
-stmtlist_helper2 -> stmt ; stmtlist
-stmt -> declaration_statement | var_assignment_statement | io_statement | while_statement | if_statement
+stmtlist -> stmt | stmtlist stmt
+stmt -> declaration_statement ; | var_assignment_statement ; | io_statement ; | while_statement | if_statement
 declaration_statement -> var_declaration_statement | struct_declaration_statement
-var_declaration_statement -> type identifier | identifier , identifier
+var_declaration_statement -> type identifier
 struct_declaration_statement -> struct identifier
 var_assignment_statement -> identifier = expression
 struct_assignment_statement -> identifier ~ identifier = expression
 while_statement -> while ( complex_condition ) compound_stmt
-if_statement -> if ( complex_condition ) compound_stmt | if_statament_helper
-if_statament_helper -> if_statament else compound_stmt
+if_statement -> if ( complex_condition ) compound_stmt else compound_stmt
 io_statement -> input | output
 input -> read ( identifier )
 output -> print ( expression )
 complex_condition -> condition logical_operator condition | complex_condition logical_operator condition
-condition -> expression ( boolean_operator ) expression
+condition -> ( expression boolean_operator expression )
 boolean_operator -> > | < | >= | <= | == | !=
 logical_operator -> AND | OR | NOT
-expression -> expression_helper | term
-expression_helper -> ( expression low_priority_arithmetic_operator term )
-low_priority_arithmetic_operator -> + | -
-high_priority_arithmetic_operator -> * | / | %
-term -> ( term high_priority_arithmentic_operator fact ) | fact
-fact -> identifier | constant | expression
+expression -> identifier | constant

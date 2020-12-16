@@ -2,6 +2,8 @@ package ubbcluj;
 
 import ubbcluj.Model.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,31 +32,25 @@ public class Main {
        // gr.Menu();
 
         ArrayList<String> program = new ArrayList<>();
-//        program.add("if");
-//        program.add("(");
-//        program.add("identifier");
-//        program.add(">");
-//        program.add("identifier");
-//        program.add(")");
-//        program.add("{");
-//        program.add("identifier");
-//        program.add("=");
-//        program.add("constant");
-//        program.add(";");
-//        program.add("}");
-        program.add("{");
-        program.add("int");
-        program.add("identifier");
-        //program.add("");
-        program.add(";");
-        program.add("}");
+        int nrLine = 0;
+        try {
+            for (String line : Files.readAllLines(Paths.get("src/resources/p1example.txt"))) {
+                for(String st : line.split(" ")){
+                    program.add(st);
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        System.out.println(program);
 
         Parser p = new Parser(gr,true);
         //p.printAllStates();
         System.out.println(p.TableStr());
         ArrayList<String> test = new ArrayList<String>(Arrays.asList("a","b","c","d"));
         //System.out.println(p.findIndexRule(3));
-        System.out.println(p.accept(test));
+        System.out.println(p.accept(program));
         //p.printAllTransitions();
 
         System.out.println("\n\n");
