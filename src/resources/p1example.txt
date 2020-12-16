@@ -1,7 +1,9 @@
 {
 int identifier ;
+identifier = constant ;
+struct identifier ;
+identifier ~ identifier = constant ;
 read ( identifier ) ;
-if ( identifier < identifier ) { identifier = identifier ; identifier = identifier ; }
-else { identifier = constant ; identifier = identifier ; }
+if ( ( identifier < identifier ) ) { identifier = identifier ; }
 print ( identifier ) ;
 }
