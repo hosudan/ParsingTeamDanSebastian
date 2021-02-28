@@ -1,9 +1,3 @@
 {
-int identifier ;
-identifier = constant ;
-struct identifier ;
-identifier ~ identifier = constant ;
-read ( identifier ) ;
-if ( ( identifier < identifier ) ) { identifier = identifier ; }
-print ( identifier ) ;
+if ( identifier < identifier ) AND ( identifier > identifier ) { identifier = identifier ; }
 }

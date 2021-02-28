@@ -280,10 +280,18 @@ public class Parser {
                 if (actionTable[stindex].getType() == ActionType.ACCEPT){
                             workingSt.removeAllElements();
                             workingSt.add("acc");
+                            /*Collections.reverse(Arrays.asList(Output.split(" ")));
                             StringBuilder out = new StringBuilder();
                             out.append(Output);
                             out.reverse();
-                            Output = out.toString();
+                            Output = out.toString(); */
+                            List<String> ar = Arrays.asList(Output.split(" "));
+                            Collections.reverse(ar);
+                            String finalout="";
+                            for(String s: ar){
+                                finalout+=s+" ";
+                            }
+                            Output = finalout;
                             end = true;
                             if (inputSt.size()>1) {
                                 //System.out.println("\n\tAICI 2");
